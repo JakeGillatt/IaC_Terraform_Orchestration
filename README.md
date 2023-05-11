@@ -18,5 +18,5 @@
 3. In the 'User variables for' section, select 'New...'
 4. Add the variable: Name: 'AWS_ACCESS_KEY_ID', Value: enter the access key
 5. Add another variable: 'AWS_SECRET_ACCESS_KEY', Value: enter the secret access key
-6. Add another variable: 'AWS_DEFAULT_REGION', Value: eu-west-1
+6. Add another variable: 'AWS_DEFAULT_REGION', Value: eu-west-1 // not doing that yet!
 7. Once they are added, select Ok to close the window
