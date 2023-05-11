@@ -44,7 +44,7 @@ provider "aws" {
 # which service? - EC2
 resource "aws_instance" "app_instance" {
         # which ami to use? - ami i.d
-        ami = "ami-0f3c9f7c389db8829"
+        ami = "ami-YOUR-ID"
         # type of instance?
         instance_type = "t2.micro"
         # do you need the public ip?
