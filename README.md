@@ -20,3 +20,39 @@
 5. Add another variable: 'AWS_SECRET_ACCESS_KEY', Value: enter the secret access key
 6. Add another variable: 'AWS_DEFAULT_REGION', Value: eu-west-1 // not doing that yet!
 7. Once they are added, select Ok to close the window
+8. In Powershell run `refreshenv` to reload the variables
+
+#
+# Setting up a main.tf file to launch an instance from an AMI
+
+1. Open a new git bash terminal as admin
+2. Create a main.tf file in your terraform directory (..documents/IaC/terraform), with `sudo nano main.tf`
+3. Enter the following code into the file:
+```
+# who is the provider - AWS
+# how to codify with terraform - syntax - name of resource {key = value} {sdfsdg}
+# most commonly used commands - terraform init - terraform plan - terraform apply
+
+provider "aws" {
+        region = "eu-west-1"
+
+}
+# create a service on AWS
+# which service? - EC2
+resource "aws_instance" "app_instance" {
+        # which ami to use? - ami i.d
+        ami = "ami-0f3c9f7c389db8829"
+        # type of instance?
+        instance_type = "t2.micro"
+        # do you need the public ip?
+        associate_public_ip_address = true
+        # what would you like to name it?
+        tags = {
+            Name = "tech221_jake_terraform_app"
+        }
+}
+```
+4. Run the `terraform init` and check that it is successful
+5. Run `terraform plan` to check which actions will be peformed
+6. Run `terraform apply` to run the actions - this will launch an EC2 instance on AWS using the AMI we provided
+- You can run `terraform destroy` to destroy the instance
