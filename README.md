@@ -59,3 +59,112 @@ resource "aws_instance" "app_instance" {
 5. Run `terraform plan` to check which actions will be peformed
 6. Run `terraform apply` to run the actions - this will launch an EC2 instance on AWS using the AMI we provided
 - You can run `terraform destroy` to destroy the instance
+
+#
+# Launching an instance with a VPC using Terraform
+
+1. In the main.tf file, add the following code:
+```
+provider "aws" {
+	region = "eu-west-1"
+
+}
+# Create a VPC
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+	Name = "jake-tech221-vpc"
+  }
+}
+
+# Create a subnet within the VPC
+resource "aws_subnet" "my_subnet" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.cidr_block
+  tags = {
+	Name = "subnet"
+  }
+}
+
+# Create an internet gateway
+resource "aws_internet_gateway" "my_igw" {
+  vpc_id = aws_vpc.my_vpc.id
+  tags = {
+	Name = "jake-tech221-IG"
+  }
+}
+
+# Create a route table and associate it with the subnet
+resource "aws_route_table" "my_route_table" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.my_igw.id
+  }
+  tags = {
+	Name = "jake-tech221-route-table"
+  }
+}
+
+# Create a security group ////////////////
+resource "aws_security_group" "my_security_group" {
+  name        = "jake-sg-vpc-terraform"
+  description = "My Security Group"
+  vpc_id      = aws_vpc.my_vpc.id
+
+  # Ingress rules
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Egress rule
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+# ////////////////////
+
+# Create an EC2 instance
+resource "aws_instance" "vpc-terraform" {
+  ami           = var.ami_id
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.my_subnet.id
+
+  tags = {
+	Name = "jake-tech221-vpc-terraform"
+  }
+}
+```
+2.  Create a 'variable.tf' file and add the following variables:
+```
+variable "ami_id" {
+    default = "ami-<YOUR AMI ID>"
+}
+
+variable "cidr_block" {
+    default = "10.0.11.0/24"
+}
+```
+3. Run `terraform plan` and then `terraform apply` to launch the instance/VPC
+- Your instance is running on AWS
