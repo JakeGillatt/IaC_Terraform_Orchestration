@@ -11,6 +11,10 @@
 - You can use the command `terraform` to get a list of commands available
 
 #
+# Terraform Diagram:
+![diagram](https://github.com/JakeGillatt/IaC_Terraform_Orchestration/assets/129315605/5b051225-6480-4c2d-bc0f-e684f3a11efd)
+
+#
 # Setting up the AWS keys/Variables for Terraform
 
 1. In windows, go into 'Edit the system environment variables'
