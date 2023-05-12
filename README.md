@@ -61,7 +61,7 @@ resource "aws_instance" "app_instance" {
 - You can run `terraform destroy` to destroy the instance
 
 #
-# Launching an instance with a VPC using Terraform
+# Launching an instance with a VPC, Subnet, IG, Route table and SG using Terraform
 
 1. In the main.tf file, add the following code:
 ```
@@ -80,6 +80,7 @@ resource "aws_vpc" "my_vpc" {
 # Create a subnet within the VPC
 resource "aws_subnet" "my_subnet" {
   vpc_id     = aws_vpc.my_vpc.id
+  map_public_ip_on_launch = "true" # makes it a public subnet
   cidr_block = var.cidr_block
   tags = {
 	Name = "subnet"
@@ -108,7 +109,7 @@ resource "aws_route_table" "my_route_table" {
 }
 
 # Create a security group ////////////////
-resource "aws_security_group" "my_security_group" {
+resource "aws_security_group" "web_sg" {
   name        = "jake-sg-vpc-terraform"
   description = "My Security Group"
   vpc_id      = aws_vpc.my_vpc.id
@@ -139,7 +140,7 @@ resource "aws_security_group" "my_security_group" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1" # allow all
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -150,21 +151,13 @@ resource "aws_instance" "vpc-terraform" {
   ami           = var.ami_id
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.my_subnet.id
-
+  key_name = "tech221"
+  security_groups = [aws_security_group.web_sg.id]
   tags = {
 	Name = "jake-tech221-vpc-terraform"
   }
 }
-```
-2.  Create a 'variable.tf' file and add the following variables:
-```
-variable "ami_id" {
-    default = "ami-<YOUR AMI ID>"
-}
 
-variable "cidr_block" {
-    default = "10.0.11.0/24"
-}
 ```
 3. Run `terraform plan` and then `terraform apply` to launch the instance/VPC
 - Your instance is running on AWS
